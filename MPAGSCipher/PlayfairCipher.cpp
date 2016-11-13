@@ -54,11 +54,11 @@ void PlayfairCipher::setKey( const std::string& key )
     std::cout << key_ << std::endl;
     
     // Store the coords of each letter
-   using l2c = std::map<char, std::pair<int, int>>;
+   /*using l2c = std::map<char, std::pair<int, int>>;
    using c2l = std::map<std::pair<int, int>, char>;
    
    l2c l2cmymap;
-   c2l c2lmymap;
+   c2l c2lmymap;*/
    
    for(unsigned int i=0; i<25; i++){
    
@@ -68,12 +68,12 @@ void PlayfairCipher::setKey( const std::string& key )
        std::pair<int, int> coord(ix, iy);
        
        // Store the playfair cipher key map
-       l2cmymap[ key_[i] ] = coord;
-       c2lmymap[coord] = key_[i];
+       l2cmymap_[ key_[i] ] = coord;
+       c2lmymap_[coord] = key_[i];
        }
      
     // Print out map contents 
-    for(auto it = l2cmymap.cbegin(); it != l2cmymap.cend(); ++it)
+    for(auto it = l2cmymap_.cbegin(); it != l2cmymap_.cend(); ++it)
     {
     std::cout << it->first << " " << it->second.first << " " << it->second.second << "\n";
     }
@@ -91,24 +91,41 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText, const Ciph
      std::cout << playout << std::endl;
      
     // Find repeated chars and add an X
-   
     std::string::iterator repeatiter;
     for(repeatiter = playout.begin(); repeatiter != playout.end(); repeatiter++){
         if(*(repeatiter + 1) == *(repeatiter)){
-        playout.push_back('X');
-            
+        playout.insert((repeatiter + 1),'X');
         }
     }
-     
-     
-     
      
     std::cout << playout << std::endl;
     
     // if the size of input is odd, add a trailing Z
+    const int n = playout.size();
+    if(n % 2 != 0){
+        playout += 'Z';
+    }
+        std::cout << playout << std::endl;
+
     // Loop over the input in Digraphs
-    //   - Find the coords in the grid for each digraph
-    //   - Apply the rules to these coords to get 'new' coords
+    std::string::iterator digraphiter;
+    for(digraphiter = playout.begin(); digraphiter != playout.end(); digraphiter+=2){
+
+        char lett1 = *digraphiter;
+        char lett2 = *(digraphiter + 1);
+
+        //   - Find the coords in the grid for each digraph
+        int lett1coord1 = l2cmymap_.find(lett1)->second.first;
+        int lett1coord2 = l2cmymap_.find(lett1)->second.second;
+        std::cout << lett1coord1 << lett1coord2 << std::endl;
+        int lett2coord1 = l2cmymap_.find(lett2)->second.first;
+        int lett2coord2 = l2cmymap_.find(lett2)->second.second;
+        std::cout << lett2coord1 << lett2coord2 << std::endl;
+
+        //   - Apply the rules to these coords to get 'new' coords
+        
+        
+    }
     //   - Find the letter associated with the new coords
     // return the text
 return playout;
