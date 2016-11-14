@@ -83,6 +83,9 @@ void PlayfairCipher::setKey( const std::string& key )
 
 std::string PlayfairCipher::applyCipher(const std::string& inputText, const CipherMode /*cipherMode*/ ) const
 {
+    // Setup the output
+    std::string playfairout{""};
+    
     // Change J → I
      std::string playout = inputText;
      std::transform(playout.begin(), playout.end(), playout.begin(), [] (char eleme) {if (eleme=='J') return 'I'; 
@@ -91,16 +94,31 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText, const Ciph
      std::cout << playout << std::endl;
      
     // Find repeated chars and add an X
+    //Comment out first if and else if and change +=2 to ++ to get rid of James correction
     std::string::iterator repeatiter;
-    for(repeatiter = playout.begin(); repeatiter != playout.end(); repeatiter++){
-        if(*(repeatiter + 1) == *(repeatiter)){
-        playout.insert((repeatiter + 1),'X');
+    for(repeatiter = playout.begin(); repeatiter != playout.end(); repeatiter+=2){
+        
+        if(repeatiter == playout.end() - 1){
+        
+            if(*repeatiter == 'Z') playout += 'Q';
+            else playout += 'Z';
+        }
+        
+        
+        if(*(repeatiter + 1) == *(repeatiter) && *repeatiter != 'X'){
+        repeatiter = playout.insert((repeatiter + 1),'X');
+        }
+        
+        else if(*(repeatiter + 1) == *(repeatiter) && *repeatiter == 'X'){
+        
+            repeatiter = playout.insert((repeatiter + 1), 'Q');
         }
     }
      
     std::cout << playout << std::endl;
     
     // if the size of input is odd, add a trailing Z
+    //Should comment out once James correction actually works
     const int n = playout.size();
     if(n % 2 != 0){
         playout += 'Z';
@@ -123,10 +141,50 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText, const Ciph
         std::cout << lett2coord1 << lett2coord2 << std::endl;
 
         //   - Apply the rules to these coords to get 'new' coords
+        int newlett1coord1;
+        int newlett1coord2;
+        int newlett2coord1;
+        int newlett2coord2;
         
+        // - Check if on same row
+        if(lett1coord2 == lett2coord2){
+            newlett1coord1 = (lett1coord1 + 1) % 5;
+            newlett2coord1 = (lett2coord1 + 1) % 5;
+            newlett1coord2 =  lett1coord2;
+            newlett2coord2 = lett2coord2;
+            
+        }
         
+        // - Check if in same column
+        else if(lett1coord1 == lett2coord1){
+            newlett1coord2 = (lett1coord2 + 1) % 5;
+            newlett2coord2 = (lett2coord2 + 1) % 5;
+            newlett1coord1 = lett1coord1;
+            newlett2coord1 = lett2coord1;
+        }
+        
+        // - Switch corners
+        else{
+            newlett1coord1 = lett2coord1;
+            newlett2coord1 = lett1coord1;
+            newlett1coord2 = lett1coord2;
+            newlett2coord2 = lett2coord2;
+            
+        }
+        
+        //   - Find the letter associated with the new coords
+        std::pair<int, int> npair1(newlett1coord1,newlett1coord2);
+        std::pair<int, int> npair2(newlett2coord1,newlett2coord2);
+
+        char nlett1 = c2lmymap_.find(npair1)->second;
+        char nlett2 = c2lmymap_.find(npair2)->second;
+        
+        playfairout += nlett1;
+        playfairout += nlett2;
+
+            
     }
-    //   - Find the letter associated with the new coords
+   
     // return the text
-return playout;
+return playfairout;
 }
