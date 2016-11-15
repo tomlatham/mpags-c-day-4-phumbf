@@ -50,6 +50,7 @@ private:
     /// The cipher key, essentially a constant shift to be applied
     std::string key_ = {""};
     
+    /// The maps used to identify the coords or encrypted/decrypted letters. Use a pair of ints and char.
     std::map<char, std::pair<int, int>> l2cmymap_;
     std::map<std::pair<int, int>, char> c2lmymap_;
     
