@@ -1,9 +1,8 @@
 // Standard library includes
 #include <string>
-#include <vector>
 #include <algorithm>
-#include<iostream>
-#include<map>
+#include <iostream>
+#include <map>
 
 // Out project headers
 #include "PlayfairCipher.hpp"
@@ -27,7 +26,7 @@ void PlayfairCipher::setKey( const std::string& key )
     std::transform(key_.begin(), key_.end(), key_.begin(), toupper);
 
     // Remove non-alpha characters
-    key_.erase(std::remove_if(key_.begin(), key_.end(), [] (unsigned char c) {return !std::isalpha(c); } ), key_.end());
+    key_.erase(std::remove_if(key_.begin(), key_.end(), [] (char c) {return !std::isalpha(c); } ), key_.end());
 
     // Change J -> I
     std::transform(key_.begin(), key_.end(), key_.begin(), [] (char elem) {if (elem=='J') return 'I'; 
@@ -79,23 +78,28 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText, const Ciph
     size_t number = playout.length();
     for(size_t i{0}; i < number; i+=2){
         
-        if(playout[i] == playout[i+1] && playout[i] != 'X'){
-            
+	if(i+1 == number) {
+	    // Need to check that i+1 is a valid element before doing anything else
+	    break;
+	}
+
+	else if(playout[i] == playout[i+1] && playout[i] != 'X'){
+	    // If i and i+1 are the same (and not an X) add an X in between
             playout.insert(i +1,"X");
             number = playout.length();
         }
         
         
         else if(playout[i] == playout[i+1] && playout[i] == 'X'){
+	    // If i and i+1 are the same (and are an X) add a Q in between
             playout.insert(i +1,"Q");
             number = playout.length();
-        
         }
     }
          
     // if the size of input is odd, add a trailing Z
     if ( number % 2 !=0){
-        if(*playout.end() == 'Z') playout +="Q";
+        if(playout[number-1] == 'Z') playout +="Q";
         else playout += "Z";
     }
 
@@ -116,35 +120,27 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText, const Ciph
 
         //   - Apply the rules to these coords to get 'new' coords
         // Declare new coords
-        int newlett1coord1;
-        int newlett1coord2;
-        int newlett2coord1;
-        int newlett2coord2;
+        int newlett1coord1 {lett1coord1};
+        int newlett1coord2 {lett1coord2};
+        int newlett2coord1 {lett2coord1};
+        int newlett2coord2 {lett2coord2};
         
         // - Check if on same row
         if(lett1coord2 == lett2coord2){
-            newlett1coord1 = ((lett1coord1 + shift) > -1) ? (( lett1coord1 + shift) % 5) : 4;
-            newlett2coord1 = ((lett2coord1 + shift) > -1) ? (( lett2coord1 + shift) % 5) : 4;
-            newlett1coord2 = lett1coord2;
-            newlett2coord2 = lett2coord2;
-            
+            newlett1coord1 = (5 + lett1coord1 + shift) % 5;
+            newlett2coord1 = (5 + lett2coord1 + shift) % 5;
         }
         
         // - Check if in same column
         else if(lett1coord1 == lett2coord1){
-            newlett1coord2 = ((lett1coord2 + shift) > -1) ? (( lett1coord2 + shift) % 5) : 4;
-            newlett2coord2 = ((lett2coord2 + shift) > -1) ? (( lett2coord2 + shift) % 5) : 4;
-            newlett1coord1 = lett1coord1;
-            newlett2coord1 = lett2coord1;
+            newlett1coord2 = (5 + lett1coord2 + shift) % 5;
+            newlett2coord2 = (5 + lett2coord2 + shift) % 5;
         }
         
         // - Switch corners
         else{
             newlett1coord1 = lett2coord1;
             newlett2coord1 = lett1coord1;
-            newlett1coord2 = lett1coord2;
-            newlett2coord2 = lett2coord2;
-            
         }
         
         //   - Find the letter associated with the new coords

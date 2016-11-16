@@ -3,7 +3,6 @@
 
 // Standard library includes
 #include <string>
-#include <vector>
 #include <map>
 
 // Our project headers
@@ -38,20 +37,21 @@ public:
      */
     std::string applyCipher( const std::string& inputText, const CipherMode cipherMode ) const;
 
+    /**
+     * Set the key to be used for the encryption/decryption
+     *
+     * \param key the key to use in the cipher
+     */
     void setKey( const std::string& key);
     
 private:
-     /// The alphabet - used to determine the cipher character given the plain character and the key
-    const std::vector<char> alphabet_ = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
-    /// The size of the alphabet
-    const std::vector<char>::size_type alphabetSize_ = alphabet_.size();
-
     /// The cipher key, essentially a constant shift to be applied
-    std::string key_ = {""};
+    std::string key_ = "";
     
-    /// The maps used to identify the coords or encrypted/decrypted letters. Use a pair of ints and char.
+    /// The map used to identify the coords given the encrypted/decrypted letters. Use a pair of ints and char.
     std::map<char, std::pair<int, int>> l2cmymap_;
+
+    /// The map used to identify the encrypted/decrypted letters given the coords. Use a pair of ints and char.
     std::map<std::pair<int, int>, char> c2lmymap_;
     
     

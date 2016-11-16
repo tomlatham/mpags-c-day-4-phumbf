@@ -81,12 +81,12 @@ bool processCommandLine(const std::vector<std::string>& args,
     }
     else if ( args[i] == "--cipher" ) {
         
-        if (i == nArgs-1) {
-        std::cerr << "[error] --cipher requires a type of Cipher" << std::endl;
-        // Set the flag to indicate the error and terminate the loop
-        processStatus = false;
-        break;
-        }
+	if (i == nArgs-1) {
+	    std::cerr << "[error] --cipher requires a type of Cipher" << std::endl;
+	    // Set the flag to indicate the error and terminate the loop
+	    processStatus = false;
+	    break;
+	}
         
         else if ( args[i+1] == "caesar"){
             settings.cipherType = CipherType::Caesar;
@@ -97,13 +97,12 @@ bool processCommandLine(const std::vector<std::string>& args,
             i++;
         }
     
-        else{
-        std::cerr << "[error] --cipher requires either caesar or playfair" << std::endl;
-        // Set the flag to indicate the error and terminate the loop
-        processStatus = false;
-        break;
-        
-        }
+	else{
+	    std::cerr << "[error] --cipher requires either caesar or playfair" << std::endl;
+	    // Set the flag to indicate the error and terminate the loop
+	    processStatus = false;
+	    break;
+	}
     }
     
     else {
